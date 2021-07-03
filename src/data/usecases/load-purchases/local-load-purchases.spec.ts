@@ -32,8 +32,11 @@ describe('LocalLoadPurchases', ()=>{
     expect(purchases).toEqual([])
    })
    test('Should return a list of purchases if cache age is less than 3 days', async ()=>{
-    const timestamp = new Date()
-    const {cacheStore, sut} = makeSut(timestamp);
+    const currentDate = new Date()
+    const timestamp = new Date(currentDate)
+    timestamp.setDate(timestamp.getDate() - 3)
+    timestamp.setSeconds(timestamp.getSeconds() + 1)
+    const {cacheStore, sut} = makeSut(currentDate);
     cacheStore.fetchResult = {
         timestamp,
         value: mockPurchases
@@ -43,5 +46,21 @@ describe('LocalLoadPurchases', ()=>{
     expect(cacheStore.fetchKey).toBe('purchases');
     expect(purchases).toEqual(cacheStore.fetchResult.value)
    })
-    
+   test('Should return an empty list if cache is older than 3 days', async ()=>{
+    const currentDate = new Date()
+    const timestamp = new Date(currentDate)
+    timestamp.setDate(timestamp.getDate() - 3)
+    timestamp.setSeconds(timestamp.getSeconds() - 1)
+    const {cacheStore, sut} = makeSut(currentDate);
+    cacheStore.fetchResult = {
+        timestamp,
+        value: mockPurchases()
+    }
+    const purchases = await sut.loadAll();
+    expect(cacheStore.actions).toEqual([CacheStoreSpy.Action.fetch, CacheStoreSpy.Action.delete]);
+    expect(cacheStore.fetchKey).toBe('purchases');
+    expect(cacheStore.deleteKey).toBe('purchases');
+    expect(purchases).toEqual([])
+   })
+
 })
