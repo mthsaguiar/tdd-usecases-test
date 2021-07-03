@@ -1,23 +1,23 @@
-import { LocalSavePurchases } from '@/data/usecases'
 import { mockPurchases, CacheStoreSpy } from '@/data/tests'
+import { LocalLoadPurchases } from './local-load-purchases'
 
 
 
 type SutTypes = {
-    sut: LocalSavePurchases
+    sut: LocalLoadPurchases
     cacheStore: CacheStoreSpy
 }
 
 const makeSut = (timestamp= new Date()): SutTypes =>{
     const cacheStore = new CacheStoreSpy()
-    const sut = new LocalSavePurchases(cacheStore, timestamp)
+    const sut = new LocalLoadPurchases(cacheStore, timestamp)
     return {
         sut,
         cacheStore
     }
 }
 //sut => system under test
-describe('LocalSavePurchases', ()=>{
+describe('LocalLoadPurchases', ()=>{
    test('Should not delete or insert cache on sut.init', ()=>{
         const {cacheStore} = makeSut();
         expect(cacheStore.actions).toEqual([]);
