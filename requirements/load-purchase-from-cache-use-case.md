@@ -10,11 +10,9 @@
 
 
 ## Exceção - Erri ai carregar dados do cache
-1. ✔️Sistema limpa o Cache
 2. ✔️Sistema retorna uma lista vazia
 
 ## Exceção - Cache expirado
-1. ✔️Sistema limpa o Cache
 2. Sistema retorna uma lista vazia
 
 ## Exceção - Cache vazio
