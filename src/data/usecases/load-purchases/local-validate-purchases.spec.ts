@@ -39,4 +39,5 @@ describe('LocalLoadPurchases', ()=>{
     expect(cacheStore.actions).toEqual([CacheStoreSpy.Action.fetch]);
     expect(cacheStore.fetchKey).toBe('purchases');
    })
+   
 })
