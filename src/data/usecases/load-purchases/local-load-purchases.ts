@@ -3,11 +3,11 @@ import { SavePurchases, LoadPurchases } from '@/domain/usecases'
 
 export class LocalLoadPurchases implements SavePurchases, LoadPurchases{
     private readonly key = 'purchases'
-    constructor(private readonly cacheStore: CacheStore, private readonly timestamp: Date){}
+    constructor(private readonly cacheStore: CacheStore, private readonly currentDate: Date){}
 
     async save(purchases: Array<SavePurchases.Params>): Promise<void>{
         this.cacheStore.replace(this.key, {
-            timestamp: this.timestamp,
+            timestamp: this.currentDate,
             value: purchases
         })
     }
