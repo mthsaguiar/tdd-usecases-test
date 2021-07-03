@@ -1,7 +1,6 @@
 import { CacheStore } from '@/data/protocols/cache'
 import { LocalSavePurchases } from '@/data/usecases'
 import { SavePurchases } from '@/domain';
-import { rejects } from 'assert';
 
 class CacheStoreSpy implements CacheStore {
     deleteKey: string | undefined
@@ -21,6 +20,9 @@ class CacheStoreSpy implements CacheStore {
     }
     siulateDeleteError(): void{
         jest.spyOn(CacheStoreSpy.prototype, 'delete').mockImplementationOnce(()=>{throw new Error()});
+    }
+    siulateInsertError(): void{
+        jest.spyOn(CacheStoreSpy.prototype, 'insert').mockImplementationOnce(()=>{throw new Error()});
     }
 }
 const mockPurchases = () :Array<SavePurchases.Params> =>[
@@ -76,5 +78,11 @@ describe('LocalSavePurchases', ()=>{
         expect(cacheStore.deleteCallsCount).toBe(1);
         expect(cacheStore.insertCallsCount).toBe(1);
         expect(cacheStore.insertValues).toEqual(purchases);
+    })
+    test('Should throw if insert throws', async ()=>{
+        const { cacheStore, sut } = makeSut();
+        cacheStore.siulateInsertError();
+        const promise = sut.save(mockPurchases());
+        expect(promise).rejects.toThrow();
     })
 })
