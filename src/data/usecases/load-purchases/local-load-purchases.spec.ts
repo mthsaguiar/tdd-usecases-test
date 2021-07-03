@@ -1,5 +1,5 @@
 import { LocalLoadPurchases } from '@/data/usecases'
-import {  CacheStoreSpy, mockPurchases } from '@/data/tests'
+import {  CacheStoreSpy, mockPurchases, getCacheExpirationDate } from '@/data/tests'
 
 
 
@@ -31,10 +31,9 @@ describe('LocalLoadPurchases', ()=>{
     expect(cacheStore.deleteKey).toBe('purchases')
     expect(purchases).toEqual([])
    })
-   test('Should return a list of purchases if cache age is less than 3 days', async ()=>{
+   test('Should return a list of purchases if cache age is valid', async ()=>{
     const currentDate = new Date()
-    const timestamp = new Date(currentDate)
-    timestamp.setDate(timestamp.getDate() - 3)
+    const timestamp = getCacheExpirationDate(currentDate)
     timestamp.setSeconds(timestamp.getSeconds() + 1)
     const {cacheStore, sut} = makeSut(currentDate);
     cacheStore.fetchResult = {
@@ -46,10 +45,10 @@ describe('LocalLoadPurchases', ()=>{
     expect(cacheStore.fetchKey).toBe('purchases');
     expect(purchases).toEqual(cacheStore.fetchResult.value)
    })
-   test('Should return an empty list if cache is older than 3 days', async ()=>{
+   test('Should return an empty list if cache is expired', async ()=>{
     const currentDate = new Date()
-    const timestamp = new Date(currentDate)
-    timestamp.setDate(timestamp.getDate() - 3)
+    const timestamp = getCacheExpirationDate(currentDate)
+
     timestamp.setSeconds(timestamp.getSeconds() - 1)
     const {cacheStore, sut} = makeSut(currentDate);
     cacheStore.fetchResult = {
@@ -62,7 +61,7 @@ describe('LocalLoadPurchases', ()=>{
     expect(cacheStore.deleteKey).toBe('purchases');
     expect(purchases).toEqual([])
    })
-   test('Should return an empty list if cache age is 3 days', async ()=>{
+   test('Should return an empty list if cache is on expiration date', async ()=>{
     const currentDate = new Date()
     const timestamp = new Date(currentDate)
     timestamp.setDate(timestamp.getDate() - 3)
@@ -77,10 +76,9 @@ describe('LocalLoadPurchases', ()=>{
     expect(cacheStore.deleteKey).toBe('purchases');
     expect(purchases).toEqual([])
    })
-   test('Should return a list of purchases if cache age is less than 3 days', async ()=>{
+   test('Should return a list of purchases if cache is empty', async ()=>{
     const currentDate = new Date()
-    const timestamp = new Date(currentDate)
-    timestamp.setDate(timestamp.getDate() - 3)
+    const timestamp = getCacheExpirationDate(currentDate)
     timestamp.setSeconds(timestamp.getSeconds() + 1)
     const {cacheStore, sut} = makeSut(currentDate);
     cacheStore.fetchResult = {
